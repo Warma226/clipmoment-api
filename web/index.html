@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClipMoment — Tes vidéos longues en clips viraux</title>
+<meta name="description" content="Importe une interview, un podcast ou un live : l'IA trouve les meilleurs passages et en fait des clips verticaux sous-titrés pour TikTok, Reels et Shorts.">
+<meta property="og:title" content="ClipMoment — Tes vidéos longues en clips viraux">
+<meta property="og:description" content="L'IA trouve les meilleurs passages de tes vidéos et les transforme en clips verticaux sous-titrés.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23141726%22/%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%227%22 fill=%22%23FF6B3F%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Montserrat:wght@900&family=Roboto+Condensed:wght@400;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+section { padding-block: 56px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; align-items: center; padding-block: 40px 56px; }
+@media (min-width: 900px) { .hero { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); padding-block: 64px 80px; } }
+.hero h1 { font-size: clamp(36px, 7.4vw, 66px); font-weight: 800; line-height: 1.02; letter-spacing: -.025em; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p { font-size: 18px; color: var(--muted); max-width: 54ch; margin: 18px 0 26px; }
+.hero .row { gap: 12px; }
+.proof { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 22px; font-size: 13.5px; color: var(--muted); }
+.proof span::before { content: "●"; color: var(--accent); margin-right: 6px; font-size: 9px; vertical-align: 2px; }
+
+/* Téléphone de démonstration : rendu du gabarit Citation en HTML */
+.phone { justify-self: center; width: min(300px, 78vw); aspect-ratio: 9/16; border-radius: 34px; padding: 10px; background: #0A0C11;
+  box-shadow: 0 30px 70px -20px rgba(10, 12, 20, .45); position: relative; }
+.screen { position: relative; width: 100%; height: 100%; border-radius: 26px; overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 30%, #4B3A3A 0%, #1E1A22 55%, #0E0F15 100%); }
+.screen .stripes { position: absolute; inset: 0 0 45% 0; background: repeating-linear-gradient(90deg, rgba(255, 90, 40, .22) 0 6px, transparent 6px 22px); mask: linear-gradient(#000, transparent); -webkit-mask: linear-gradient(#000, transparent); }
+.screen .person { position: absolute; left: 50%; bottom: -6%; width: 78%; aspect-ratio: 1/1.35; transform: translateX(-50%); }
+.screen .person i { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 50%; background: #C79072; }
+.screen .person .head { top: 6%; width: 46%; aspect-ratio: 1/1.15; }
+.screen .person .hair { top: 3%; width: 48%; aspect-ratio: 1/.5; background: #2A2220; border-radius: 50% 50% 30% 30%; }
+.screen .person .body { bottom: 0; width: 100%; height: 50%; border-radius: 46% 46% 0 0; background: #15161C; }
+.screen .person .shirt { bottom: 0; width: 40%; height: 46%; border-radius: 40% 40% 0 0; background: #A9B2A4; }
+.screen .logo-tv { position: absolute; top: 9%; right: 8%; background: #fff; color: #C8102E; font: italic 900 11px/1 Montserrat, sans-serif; padding: 4px 6px; letter-spacing: .02em; }
+.screen .quote { position: absolute; left: 6%; right: 6%; top: 60%; display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.screen .quote span { background: #fff; color: #0B0B0B; font: 700 15.5px/1.25 "Roboto Condensed", "Arial Narrow", sans-serif; padding: 1px 6px; }
+.screen .quote small { background: #fff; color: #222; font: 400 10px/1.3 "Roboto Condensed", "Arial Narrow", sans-serif; padding: 2px 5px; margin-top: 4px; }
+.screen .cap { position: absolute; left: 0; right: 0; top: 80%; text-align: center; font: 900 19px/1 Montserrat, "Arial Black", sans-serif; color: #fff;
+  -webkit-text-stroke: 1.2px #000; text-shadow: 0 2px 0 #000; letter-spacing: .01em; }
+.screen .cap b { color: #FFE600; font-weight: 900; display: inline-block; animation: pop 1.6s infinite; }
+@keyframes pop { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.12); } 30% { transform: scale(1); } }
+.screen .score { position: absolute; top: 4%; left: 6%; background: rgba(10, 12, 18, .78); color: #fff; font: 500 11px var(--mono); padding: 4px 8px; border-radius: 8px; }
+.screen .score::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #FF6B3F; margin-right: 6px; }
+
+.sh { max-width: 640px; margin-bottom: 28px; }
+.sh h2 { font-size: clamp(26px, 4.6vw, 38px); font-weight: 800; }
+.sh p { color: var(--muted); margin: 10px 0 0; }
+.steps3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; counter-reset: s; }
+.steps3 div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; }
+.steps3 div::before { counter-increment: s; content: "0" counter(s); font: 500 13px var(--mono); color: var(--accent); }
+.steps3 h3 { font-size: 19px; margin: 8px 0 6px; }
+.steps3 p { margin: 0; color: var(--muted); }
+.feats { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.feats div { padding: 18px 4px 18px 0; border-bottom: 1px solid var(--line); }
+.feats h3 { font-size: 17px; margin-bottom: 4px; }
+.feats p { margin: 0; color: var(--muted); font-size: 14.5px; max-width: 46ch; }
+.price { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.price div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; display: flex; flex-direction: column; gap: 4px; }
+.price div.top { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.price b { font: 800 34px/1 var(--display); }
+.price .amt { font-size: 18px; font-weight: 600; margin-top: 8px; }
+.faq details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+.faq summary { cursor: pointer; font-weight: 600; font-size: 16px; }
+.faq p { color: var(--muted); margin: 10px 0 0; max-width: 70ch; }
+.final { background: var(--ink); color: var(--bg); border-radius: 22px; padding: 36px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.final h2 { font-size: clamp(26px, 5vw, 40px); font-weight: 800; }
+footer { padding-block: 30px calc(30px + env(safe-area-inset-bottom, 0px)); color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="logo" href="index.html"><i aria-hidden="true"></i><span data-brand>ClipMoment</span></a>
+    <span class="spacer"></span>
+    <a class="btn ghost small" href="#tarifs">Tarifs</a>
+    <a class="btn small" href="app.html">Se connecter</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <h1>Tes vidéos longues, découpées en <em>clips viraux</em>.</h1>
+      <p>Importe une interview, un podcast, un live ou un cours. L'IA écoute tout, repère les passages qui accrochent et les transforme en clips verticaux sous-titrés, prêts pour TikTok, Reels et Shorts.</p>
+      <div class="row">
+        <a class="btn primary big" href="app.html" id="cta">Essayer gratuitement</a>
+        <a class="btn big" href="#comment">Comment ça marche</a>
+      </div>
+      <div class="proof"><span>Sous-titres mot par mot</span><span>Fonctionne sur téléphone</span><span>Paiement Orange Money et Wave</span></div>
+    </div>
+    <div class="phone" aria-label="Exemple de clip vertical avec une citation et des sous-titres">
+      <div class="screen">
+        <div class="stripes"></div>
+        <div class="person" aria-hidden="true"><i class="body"></i><i class="shirt"></i><i class="head"></i><i class="hair"></i></div>
+        <span class="score">94/100</span>
+        <span class="logo-tv">TA CHAÎNE</span>
+        <div class="quote"><span>« Personne ne t'explique ça,</span><span>c'est pour ça que tu</span><span>n'avances PAS ! »</span><small>Le conseil cash du coach</small></div>
+        <div class="cap">PERSONNE <b>NE</b> T'EXPLIQUE</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="comment">
+    <div class="sh"><h2>Trois étapes, depuis ton téléphone</h2><p>Pas besoin d'ordinateur ni de logiciel de montage.</p></div>
+    <div class="steps3">
+      <div><h3>Importe ta vidéo</h3><p>Choisis une vidéo longue dans ta galerie : jusqu'à 30 minutes par analyse.</p></div>
+      <div><h3>L'IA trouve les moments forts</h3><p>Elle transcrit chaque mot, repère les phrases qui accrochent et donne une note de potentiel viral à chaque clip.</p></div>
+      <div><h3>Retouche et exporte</h3><p>Choisis un gabarit, corrige un mot, ajoute ton logo, puis exporte en 9:16 et publie directement.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><h2>Tout ce qu'il faut pour publier vite</h2></div>
+    <div class="feats">
+      <div><h3>Gabarit Citation</h3><p>La phrase choc entre guillemets dans des bandes blanches, avec une ligne de contexte, comme les chaînes de télé.</p></div>
+      <div><h3>Sous-titres animés</h3><p>Gros sous-titres mot par mot, le mot prononcé ressort en couleur. Corrigeables à la main.</p></div>
+      <div><h3>Cadrage sur le visage</h3><p>La vidéo horizontale est recadrée en vertical en suivant la personne qui parle. Fond flou ou réglage manuel au choix.</p></div>
+      <div><h3>Note de potentiel viral</h3><p>Chaque clip est classé, avec la raison pour laquelle il peut marcher.</p></div>
+      <div><h3>Ta marque partout</h3><p>Ton logo en haut à droite, ta signature, ta couleur, sur tous tes clips.</p></div>
+      <div><h3>Plusieurs langues</h3><p>Français, anglais, arabe, espagnol, portugais, et la plupart des grandes langues.</p></div>
+    </div>
+  </section>
+
+  <section id="tarifs">
+    <div class="sh"><h2>Tarifs simples</h2><p id="price-sub">1 crédit = 1 minute de vidéo analysée. Le montage et les exports sont illimités. Tes premiers crédits sont offerts.</p></div>
+    <div class="price" id="price"></div>
+    <p class="note" style="margin-top:14px">Paiement par Orange Money ou Wave. Tes crédits sont ajoutés à ton compte après réception.</p>
+  </section>
+
+  <section class="faq">
+    <div class="sh"><h2>Questions fréquentes</h2></div>
+    <details><summary>Quelles vidéos marchent le mieux ?</summary><p>Celles où quelqu'un parle : interviews, podcasts, débats, lives, cours, prédications, conférences. L'IA choisit les passages d'après ce qui est dit.</p></details>
+    <details><summary>Ma vidéo est-elle envoyée sur internet ?</summary><p>Seul l'audio est envoyé, pour la transcription. La vidéo reste sur ton appareil : le découpage, les sous-titres et l'export se font dans ton navigateur.</p></details>
+    <details><summary>Combien de temps ça prend ?</summary><p>L'analyse d'une vidéo de 30 minutes prend en général 2 à 5 minutes. L'export d'un clip prend à peu près sa durée : 40 secondes pour un clip de 40 secondes.</p></details>
+    <details><summary>Je peux coller un lien YouTube ?</summary><p>Pas encore. Télécharge d'abord la vidéo sur ton téléphone, puis importe le fichier.</p></details>
+    <details><summary>Mes crédits expirent-ils ?</summary><p>Non. Tes crédits restent sur ton compte tant que tu ne les utilises pas.</p></details>
+  </section>
+
+  <section>
+    <div class="final">
+      <h2>Ton prochain clip viral est déjà dans tes vidéos.</h2>
+      <a class="btn primary big" href="app.html">Créer mon compte gratuit</a>
+    </div>
+  </section>
+</main>
+<footer class="wrap">© <span id="year"></span> <span data-brand>ClipMoment</span> · Clips verticaux pour TikTok, Reels et Shorts</footer>
+
+<script src="assets/config.js"></script>
+<script src="assets/mock.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<script src="assets/core.js"></script>
+<script>
+(async function () {
+  document.querySelectorAll('[data-brand]').forEach((n) => { n.textContent = CM.brand; });
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const s = await CM.loadSettings();
+  const packs = Array.isArray(s.packs) && s.packs.length ? s.packs : [{ credits: 60, price: '1 000 F' }, { credits: 300, price: '4 000 F' }, { credits: 900, price: '10 000 F' }];
+  const box = document.getElementById('price');
+  packs.forEach((p, i) => {
+    box.appendChild(CM.el('div', { class: i === 1 ? 'top' : '' }, [
+      CM.el('span', { class: 'lbl', text: i === 1 ? 'Le plus choisi' : 'Pack' }),
+      CM.el('b', { text: p.credits + ' min' }),
+      CM.el('span', { class: 'muted small', text: 'de vidéo à analyser' }),
+      CM.el('span', { class: 'amt', text: p.price }),
+    ]));
+  });
+  const w = Number(s.welcome_credits) || 0;
+  if (w) {
+    document.getElementById('cta').textContent = 'Essayer gratuitement · ' + w + ' min offertes';
+    document.getElementById('price-sub').textContent = '1 crédit = 1 minute de vidéo analysée. Le montage et les exports sont illimités. ' + w + ' minutes offertes à l\'inscription.';
+  }
+})();
+</script>
+</body>
+</html>

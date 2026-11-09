@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClipMoment — Studio</title>
+<meta name="theme-color" content="#0D0F15" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ECEEF3" media="(prefers-color-scheme: light)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23141726%22/%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%227%22 fill=%22%23FF6B3F%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Montserrat:wght@800;900&family=Roboto+Condensed:wght@400;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+main { padding-block: 22px 60px; }
+.view { display: flex; flex-direction: column; gap: 18px; }
+.demo { background: var(--accent-soft); border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.demo .wrap { padding-block: 8px; }
+
+/* Connexion */
+.auth { max-width: 420px; margin: 4vh auto 0; width: 100%; }
+.auth h1 { font-size: 28px; font-weight: 800; }
+
+/* Accueil */
+.drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 34px 18px;
+  border: 2px dashed var(--line); border-radius: 18px; background: var(--sunk); cursor: pointer; }
+.drop:hover, .drop.over { border-color: var(--accent); }
+.drop:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.drop svg { width: 46px; height: 46px; color: var(--accent); }
+.drop b { font-family: var(--display); font-size: 21px; }
+.filecard { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; align-items: center; }
+.filecard video { width: 112px; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; background: #000; }
+.filecard .name { font-weight: 600; overflow-wrap: anywhere; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.cost { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cost b { font-family: var(--display); font-size: 22px; }
+.projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.proj { text-align: left; display: flex; flex-direction: column; gap: 4px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 13px;
+  background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; min-width: 0; }
+.proj:hover { border-color: var(--muted); }
+.proj b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Analyse */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; }
+.steps .dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--sunk); font-family: var(--mono); font-size: 12px; }
+.steps li.on .dot { background: var(--accent); color: var(--accent-ink); animation: pulse 1.2s infinite; }
+.steps li.done .dot { background: var(--ok); color: #fff; }
+.steps li.done .dot::after { content: "✓"; }
+.steps li.done .dot span { display: none; }
+.steps b { display: block; }
+@keyframes pulse { 50% { opacity: .55; } }
+
+/* Clips */
+.clips-head { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.clips-head h1 { font-size: clamp(22px, 5vw, 30px); font-weight: 800; overflow-wrap: anywhere; }
+.grid-clips { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 158px), 1fr)); gap: 12px; }
+@media (min-width: 700px) { .grid-clips { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; } }
+.card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 15px; overflow: hidden; min-width: 0; }
+.card .thumb { position: relative; aspect-ratio: 9/16; background: #0b0d12; cursor: pointer; border: 0; padding: 0; width: 100%; display: block; }
+.card .thumb canvas { width: 100%; height: 100%; display: block; }
+.card .score { position: absolute; top: 8px; left: 8px; background: rgba(10, 12, 18, .78); color: #fff; border-radius: 9px; padding: 4px 8px;
+  font-family: var(--mono); font-size: 12.5px; display: flex; gap: 6px; align-items: center; }
+.card .score i { width: 7px; height: 7px; border-radius: 50%; background: #FF6B3F; }
+.card .dur { position: absolute; bottom: 8px; right: 8px; background: rgba(10, 12, 18, .78); color: #fff; border-radius: 7px; padding: 2px 7px; font-family: var(--mono); font-size: 12px; }
+.card .body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.card .t { font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.card .why { font-size: 13px; color: var(--muted); }
+.card .act { display: flex; gap: 6px; padding: 0 12px 12px; }
+.card .act .btn { flex: 1; }
+
+/* Éditeur */
+.ed { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (min-width: 980px) { .ed { grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); } .ed .left { position: sticky; top: 76px; } }
+.stage { position: relative; width: min(100%, calc(62vh * 9 / 16)); min-width: 220px; max-width: 100%; aspect-ratio: 9/16; margin-inline: auto;
+  border-radius: 18px; overflow: hidden; background: #000; }
+.stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stage video { object-fit: contain; opacity: .01; }
+.stage .rec { position: absolute; top: 10px; left: 10px; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+  background: rgba(0, 0, 0, .65); color: #fff; font: 12px var(--mono); }
+.stage .rec::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #FF4A2B; animation: pulse 1s infinite; }
+.transport { display: flex; align-items: center; gap: 10px; }
+.transport input[type=range] { flex: 1; min-width: 0; }
+.icon { width: 44px; height: 44px; padding: 0; border-radius: 50%; flex: none; }
+.tc { font: 12.5px var(--mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.trim { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nudge { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 5px; border-radius: 11px; background: var(--sunk); }
+.nudge .btn { min-height: 34px; padding: 4px 9px; font: 500 13px var(--mono); }
+.nudge b { font: 500 13px var(--mono); }
+.tpl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tpl label { position: relative; }
+.tpl input { position: absolute; opacity: 0; }
+.tpl span { display: flex; flex-direction: column; gap: 3px; padding: 10px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; height: 100%; }
+.tpl span b { font-size: 14px; }
+.tpl span small { color: var(--muted); font-size: 12px; line-height: 1.35; }
+.tpl input:checked + span { border-color: var(--accent); background: var(--accent-soft); }
+.tpl input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 420px) { .tpl { grid-template-columns: 1fr; } }
+details.sec { border-top: 1px solid var(--line); padding-top: 12px; }
+details.sec summary { cursor: pointer; font-weight: 600; }
+.capedit { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow: auto; margin-top: 10px; padding-right: 4px; }
+.capedit label { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 8px; align-items: center; }
+.capedit input { padding: 7px 9px; font-size: 14px; }
+.result { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 13px; background: var(--sunk); }
+.result video { width: 100%; max-height: 52vh; border-radius: 10px; background: #000; }
+.packs { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.pack { border: 1px solid var(--line); border-radius: 13px; padding: 12px; display: flex; flex-direction: column; gap: 2px; }
+.pack b { font-family: var(--display); font-size: 22px; }
+.copyrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 11px; border-radius: 11px; background: var(--sunk); }
+.copyrow span { font-family: var(--mono); font-size: 14px; overflow-wrap: anywhere; }
+.hist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; font-size: 13.5px; }
+.hist li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.hist .plus { color: var(--ok); font-family: var(--mono); }
+.hist .minus { color: var(--muted); font-family: var(--mono); }
+@media (max-width: 480px) { .bar .wrap { gap: 6px; } .bar .logo { font-size: 18px; } .bar .btn.small { padding: 6px 8px; } .card .act { padding: 0 10px 10px; } .card .body { padding: 10px; } .card .why { display: none; } }
+.logoprev { width: 120px; height: 56px; border-radius: 10px; background: repeating-conic-gradient(var(--sunk) 0 25%, var(--surface) 0 50%) 0 0/14px 14px;
+  display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); }
+.logoprev img { max-width: 100%; max-height: 100%; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="logo" href="index.html"><i aria-hidden="true"></i><span data-brand>ClipMoment</span></a>
+    <span class="spacer"></span>
+    <button class="pill" id="credits-btn" type="button" hidden><span>Crédits</span><b id="credits">0</b></button>
+    <a class="btn ghost small" id="admin-link" href="admin.html" hidden>Admin</a>
+    <button class="btn ghost small" id="logout" type="button" hidden>Quitter</button>
+  </div>
+</header>
+<div class="demo" id="demo-banner" hidden><div class="wrap"><b>Mode démo.</b> La transcription est simulée et tout reste dans ce navigateur. Remplis <span class="mono">assets/config.js</span> pour activer le vrai service.</div></div>
+
+<main class="wrap">
+  <!-- Connexion -->
+  <section class="view" id="v-auth" hidden>
+    <div class="auth panel">
+      <h1 id="auth-title">Connexion</h1>
+      <p class="note" id="auth-sub">Connecte-toi pour retrouver tes projets et tes crédits.</p>
+      <form id="auth-form" class="stack" novalidate>
+        <label class="field"><span class="lbl">Adresse e-mail</span><input type="email" id="auth-email" autocomplete="email" required></label>
+        <label class="field" id="auth-pass-row"><span class="lbl">Mot de passe</span><input type="password" id="auth-pass" autocomplete="current-password" minlength="6" required></label>
+        <div class="alert err" id="auth-err" hidden></div>
+        <div class="alert ok" id="auth-ok" hidden></div>
+        <button class="btn primary big block" id="auth-submit" type="submit">Se connecter</button>
+      </form>
+      <div class="row small">
+        <button class="btn ghost small" id="auth-switch" type="button">Créer un compte</button>
+        <span class="spacer"></span>
+        <button class="btn ghost small" id="auth-forgot" type="button">Mot de passe oublié</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nouveau mot de passe (lien reçu par e-mail) -->
+  <section class="view" id="v-newpass" hidden>
+    <form class="auth panel" id="newpass-form">
+      <h1>Nouveau mot de passe</h1>
+      <label class="field"><span class="lbl">Nouveau mot de passe</span><input type="password" id="newpass" minlength="6" autocomplete="new-password" required></label>
+      <button class="btn primary big block" type="submit">Enregistrer</button>
+    </form>
+  </section>
+
+  <!-- Accueil -->
+  <section class="view" id="v-home" hidden>
+    <div class="panel">
+      <div class="ph"><h2>Nouvelle vidéo</h2><span class="tag" id="max-tag">30 min max</span></div>
+      <label class="drop" id="drop" for="file">
+        <input class="vh" type="file" id="file" accept="video/*">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="28" height="26" rx="5"/><path d="M33 20l10-6v20l-10-6"/><path d="M19 18v12M13 24h12"/></svg>
+        <b>Importer une vidéo longue</b>
+        <span class="muted small">Interview, podcast, live, cours, match… depuis ta galerie (MP4, MOV, WebM)</span>
+      </label>
+      <div id="picked" class="stack" hidden>
+        <div class="filecard">
+          <video id="pick-vid" muted playsinline preload="metadata"></video>
+          <div><div class="name" id="pick-name"></div><div class="muted small mono" id="pick-meta"></div>
+            <button class="btn ghost small" id="pick-change" type="button" style="margin-left:-10px">Changer de vidéo</button></div>
+        </div>
+        <div class="opts">
+          <label class="field"><span class="lbl">Langue de la vidéo</span>
+            <select id="opt-lang"><option value="">Détection automatique</option><option value="fr">Français</option><option value="en">Anglais</option>
+              <option value="ar">Arabe</option><option value="es">Espagnol</option><option value="pt">Portugais</option></select></label>
+          <label class="field"><span class="lbl">Durée des clips</span>
+            <select id="opt-len"><option value="auto">Automatique (20–60 s)</option><option value="court">Courts (15–30 s)</option>
+              <option value="moyen">Moyens (30–60 s)</option><option value="long">Longs (60–90 s)</option></select></label>
+          <label class="field"><span class="lbl">Nombre de clips</span>
+            <select id="opt-count"><option value="0">Automatique</option><option value="3">3</option><option value="5">5</option><option value="8">8</option><option value="12">12</option></select></label>
+          <label class="field"><span class="lbl">Gabarit par défaut</span>
+            <select id="opt-tpl"><option value="citation">Citation (titre façon chaîne TV)</option><option value="dynamique">Sous-titres animés</option><option value="sobre">Sobre</option></select></label>
+        </div>
+        <div class="cost"><b id="cost">0 crédit</b><span class="muted small" id="cost-note"></span></div>
+        <div class="alert err" id="home-err" hidden></div>
+        <button class="btn primary big" id="start" type="button">Trouver les meilleurs moments</button>
+        <p class="note">L'audio est envoyé à notre service de transcription. La vidéo, elle, reste sur ton appareil : le montage et l'export se font ici.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h2>Mes projets</h2><span class="muted small" id="proj-count"></span></div>
+      <div class="projects" id="projects"></div>
+      <p class="note" id="proj-empty" hidden>Aucun projet pour l'instant. Importe ta première vidéo ci-dessus.</p>
+    </div>
+  </section>
+
+  <!-- Analyse -->
+  <section class="view" id="v-analyse" hidden>
+    <div class="panel" style="max-width:640px;width:100%;margin-inline:auto">
+      <h2 id="an-title">Analyse en cours</h2>
+      <p class="note">Garde cette page ouverte. Pour une vidéo de 30 min, compte environ 2 à 5 minutes.</p>
+      <ol class="steps" id="steps">
+        <li data-step="audio"><span class="dot"><span>1</span></span><div><b>Lecture de l'audio</b><span class="muted small" data-detail></span></div></li>
+        <li data-step="stt"><span class="dot"><span>2</span></span><div><b>Transcription mot par mot</b><span class="muted small" data-detail></span></div></li>
+        <li data-step="ai"><span class="dot"><span>3</span></span><div><b>Recherche des moments viraux</b><span class="muted small" data-detail></span></div></li>
+      </ol>
+      <div class="bar-p"><i id="an-bar"></i></div>
+      <div class="alert err" id="an-err" hidden></div>
+      <div class="row"><button class="btn" id="an-cancel" type="button">Annuler</button><button class="btn" id="an-back" type="button" hidden>Retour à l'accueil</button></div>
+    </div>
+  </section>
+
+  <!-- Clips -->
+  <section class="view" id="v-clips" hidden>
+    <div class="clips-head">
+      <div class="stack" style="gap:4px;flex:1">
+        <button class="btn ghost small" id="clips-back" type="button" style="align-self:flex-start;margin-left:-10px">← Mes projets</button>
+        <h1 id="clips-title">Projet</h1>
+        <span class="muted small" id="clips-meta"></span>
+      </div>
+      <button class="btn" id="brand-open" type="button">Ma marque</button>
+    </div>
+    <div class="alert warn" id="need-file" hidden>
+      <div class="stack" style="gap:8px">
+        <span>Pour voir et exporter les clips, resélectionne la vidéo d'origine : <b id="need-name"></b></span>
+        <label class="btn primary small" for="refile" style="align-self:flex-start">Choisir la vidéo<input class="vh" type="file" id="refile" accept="video/*"></label>
+      </div>
+    </div>
+    <div class="grid-clips" id="cards"></div>
+  </section>
+
+  <!-- Éditeur -->
+  <section class="view" id="v-editor" hidden>
+    <div class="row"><button class="btn ghost small" id="ed-back" type="button" style="margin-left:-10px">← Tous les clips</button>
+      <span class="spacer"></span><span class="tag hot mono" id="ed-score"></span></div>
+    <div class="ed">
+      <div class="left stack">
+        <div class="stage" id="stage">
+          <video id="vid" playsinline preload="auto"></video>
+          <canvas id="cv" width="720" height="1280" aria-label="Aperçu du clip vertical"></canvas>
+          <div class="rec" id="rec" hidden>REC</div>
+        </div>
+        <div class="transport">
+          <button class="btn icon" id="play" type="button" aria-label="Lire">
+            <svg id="ic-play" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6 4l11 6-11 6z"/></svg>
+            <svg id="ic-pause" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" hidden><rect x="5" y="4" width="3.5" height="12" rx="1"/><rect x="11.5" y="4" width="3.5" height="12" rx="1"/></svg>
+          </button>
+          <label class="vh" for="scrub">Position dans le clip</label>
+          <input type="range" id="scrub" min="0" max="1000" value="0">
+          <span class="tc" id="tc">00:00 / 00:00</span>
+        </div>
+        <div class="trim">
+          <div class="stack" style="gap:5px"><span class="lbl">Début</span><div class="nudge"><button class="btn" type="button" data-trim="start:-0.5" aria-label="Commencer plus tôt">−½</button><b id="t-start">0</b><button class="btn" type="button" data-trim="start:0.5" aria-label="Commencer plus tard">+½</button></div></div>
+          <div class="stack" style="gap:5px"><span class="lbl">Fin</span><div class="nudge"><button class="btn" type="button" data-trim="end:-0.5" aria-label="Finir plus tôt">−½</button><b id="t-end">0</b><button class="btn" type="button" data-trim="end:0.5" aria-label="Finir plus tard">+½</button></div></div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="panel">
+          <h2 id="ed-title">Clip</h2>
+          <p class="note" id="ed-reason"></p>
+          <div class="stack" style="gap:6px"><span class="lbl">Gabarit</span>
+            <div class="tpl" role="radiogroup" aria-label="Gabarit">
+              <label><input type="radio" name="tpl" id="tpl-citation" value="citation"><span><b>Citation</b><small>Bandes blanches, façon chaîne TV</small></span></label>
+              <label><input type="radio" name="tpl" id="tpl-dynamique" value="dynamique"><span><b>Animé</b><small>Mot par mot, mot actif en couleur</small></span></label>
+              <label><input type="radio" name="tpl" id="tpl-sobre" value="sobre"><span><b>Sobre</b><small>Sous-titres blancs discrets</small></span></label>
+            </div>
+          </div>
+          <label class="field" id="f-title"><span class="lbl">Titre-citation</span><input type="text" id="in-title" maxlength="120"></label>
+          <label class="field" id="f-context"><span class="lbl">Ligne de contexte</span><input type="text" id="in-context" maxlength="90"></label>
+          <label class="field" id="f-hook" hidden><span class="lbl">Accroche en haut</span><input type="text" id="in-hook" maxlength="60"></label>
+          <label class="field"><span class="lbl">Affichage du titre</span>
+            <select id="in-titlesec"><option value="3">3 premières secondes</option><option value="5">5 premières secondes</option><option value="8">8 premières secondes</option>
+              <option value="14">14 premières secondes</option><option value="0">Pendant tout le clip</option></select></label>
+        </div>
+
+        <div class="panel">
+          <div class="ph"><h2>Sous-titres</h2><label class="check"><input type="checkbox" id="in-caps"> Afficher</label></div>
+          <label class="field"><span class="lbl">Hauteur des sous-titres</span><input type="range" id="in-capy" min="35" max="88" value="70"></label>
+          <details class="sec" id="capdetails"><summary>Corriger le texte des sous-titres</summary><div class="capedit" id="capedit"></div></details>
+        </div>
+
+        <div class="panel">
+          <h2>Cadrage vertical</h2>
+          <div class="seg" role="radiogroup" aria-label="Cadrage">
+            <label><input type="radio" name="frame" id="fr-auto" value="auto"><span>Visage</span></label>
+            <label><input type="radio" name="frame" id="fr-manuel" value="manuel"><span>Manuel</span></label>
+            <label><input type="radio" name="frame" id="fr-flou" value="flou"><span>Fond flou</span></label>
+            <label><input type="radio" name="frame" id="fr-entier" value="entier"><span>Entier</span></label>
+          </div>
+          <label class="field" id="f-manual" hidden><span class="lbl">Position (gauche ↔ droite)</span><input type="range" id="in-manual" min="0" max="100" value="50"></label>
+          <p class="note" id="frame-note"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Export</h2>
+          <button class="btn primary big" id="export" type="button">Exporter le clip</button>
+          <div id="exp-wrap" class="stack" hidden style="gap:8px">
+            <div class="bar-p"><i id="exp-bar"></i></div>
+            <div class="row"><span class="tc" id="exp-txt">Préparation…</span><span class="spacer"></span><button class="btn small" id="exp-cancel" type="button">Annuler</button></div>
+          </div>
+          <div class="result" id="result" hidden>
+            <video id="res-vid" controls playsinline></video>
+            <span class="muted small mono" id="res-meta"></span>
+            <div class="row"><a class="btn primary" id="dl" download>Télécharger</a><button class="btn" id="share" type="button" hidden>Partager</button></div>
+          </div>
+          <p class="note">L'export se fait en temps réel sur ton appareil : un clip de 40 s prend environ 40 s. Garde l'écran allumé.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Crédits -->
+<dialog id="dlg-credits" aria-labelledby="dc-title">
+  <div class="dh"><h2 id="dc-title">Recharger mes crédits</h2><button class="btn ghost small" type="button" data-close>Fermer</button></div>
+  <div class="db">
+    <p class="note">1 crédit = 1 minute de vidéo analysée. Les clips, les retouches et les exports sont illimités.</p>
+    <div class="packs" id="packs"></div>
+    <p id="pay-instr"></p>
+    <div class="stack" id="pay-rows" style="gap:8px"></div>
+    <div class="copyrow"><div><span class="lbl">Ton adresse à indiquer</span><br><span id="pay-email"></span></div><button class="btn small" type="button" id="copy-email">Copier</button></div>
+    <div><span class="lbl">Historique</span><ul class="hist" id="hist"></ul></div>
+  </div>
+</dialog>
+
+<!-- Marque -->
+<dialog id="dlg-brand" aria-labelledby="db-title">
+  <div class="dh"><h2 id="db-title">Ma marque</h2><button class="btn ghost small" type="button" data-close>Fermer</button></div>
+  <div class="db">
+    <div class="row"><div class="logoprev" id="logo-prev"><span class="muted small">Aucun logo</span></div>
+      <div class="stack" style="gap:6px"><label class="btn small" for="logo-file">Choisir un logo (PNG)<input class="vh" type="file" id="logo-file" accept="image/*"></label>
+        <button class="btn ghost small" id="logo-del" type="button">Retirer</button></div></div>
+    <p class="note">Le logo s'affiche en haut à droite de chaque clip. Un PNG à fond transparent rend mieux.</p>
+    <label class="field"><span class="lbl">Couleur du mot actif et de la barre</span><input type="color" id="brand-color" value="#FFE600" style="width:64px;height:42px;padding:2px;border-radius:10px;border:1px solid var(--line);background:var(--surface)"></label>
+    <label class="field"><span class="lbl">Signature en bas</span><input type="text" id="brand-handle" maxlength="40" placeholder="@toncompte"></label>
+    <label class="check"><input type="checkbox" id="brand-progress"> Barre de progression en bas du clip</label>
+  </div>
+</dialog>
+
+<script src="assets/config.js"></script>
+<script src="assets/mock.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<script src="assets/core.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/render.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

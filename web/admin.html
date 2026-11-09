@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClipMoment — Administration</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%23141726%22/%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%227%22 fill=%22%23FF6B3F%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+main { padding-block: 22px 60px; display: flex; flex-direction: column; gap: 18px; }
+h1 { font-size: 28px; font-weight: 800; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font: 800 28px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (min-width: 960px) { .cols { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); } }
+.tw { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+td.mail { overflow-wrap: anywhere; min-width: 160px; }
+.plus { color: var(--ok); } .minus { color: var(--muted); }
+.quick { display: flex; gap: 6px; flex-wrap: wrap; }
+.packrow { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="logo" href="app.html"><i aria-hidden="true"></i><span data-brand>ClipMoment</span></a>
+    <span class="tag">Admin</span>
+    <span class="spacer"></span>
+    <a class="btn ghost small" href="app.html">Studio</a>
+  </div>
+</header>
+<main class="wrap">
+  <div class="alert" id="gate">Chargement…</div>
+
+  <div id="admin" class="stack" hidden style="gap:18px">
+    <h1>Tableau de bord</h1>
+    <div class="stats">
+      <div class="stat"><span class="lbl">Clients</span><b id="s-clients">0</b></div>
+      <div class="stat"><span class="lbl">Analyses</span><b id="s-analyses">0</b></div>
+      <div class="stat"><span class="lbl">Minutes transcrites</span><b id="s-minutes">0</b></div>
+      <div class="stat"><span class="lbl">Crédits vendus</span><b id="s-sold">0</b></div>
+    </div>
+
+    <div class="cols">
+      <div class="stack" style="gap:18px">
+        <form class="panel" id="add-form">
+          <h2>Ajouter des crédits</h2>
+          <p class="note">Après réception d'un paiement Orange Money ou Wave. Un montant négatif retire des crédits.</p>
+          <label class="field"><span class="lbl">E-mail du client</span><input type="email" id="add-email" required autocomplete="off"></label>
+          <label class="field"><span class="lbl">Crédits</span><input type="number" id="add-amount" required step="1"></label>
+          <div class="quick" id="quick"></div>
+          <label class="field"><span class="lbl">Note (référence du paiement)</span><input type="text" id="add-note" maxlength="300" placeholder="Ex. : Wave 4 000 F, réf. 8H2K…"></label>
+          <button class="btn primary" type="submit">Ajouter</button>
+          <div class="alert ok" id="add-ok" hidden></div>
+        </form>
+
+        <form class="panel" id="set-form">
+          <h2>Réglages de vente</h2>
+          <div class="row" style="gap:12px">
+            <label class="field" style="flex:1"><span class="lbl">Crédits offerts à l'inscription</span><input type="number" id="set-welcome" min="0" step="1"></label>
+            <label class="field" style="flex:1"><span class="lbl">Durée max (min)</span><input type="number" id="set-max" min="1" max="120" step="1"></label>
+          </div>
+          <div class="stack" style="gap:8px"><span class="lbl">Packs (crédits · prix affiché)</span><div class="stack" id="packs" style="gap:8px"></div>
+            <button class="btn small" type="button" id="pack-add" style="align-self:flex-start">Ajouter un pack</button></div>
+          <label class="field"><span class="lbl">Instructions de paiement</span><textarea id="set-instr"></textarea></label>
+          <label class="field"><span class="lbl">Numéro Orange Money</span><input type="text" id="set-om"></label>
+          <label class="field"><span class="lbl">Numéro Wave</span><input type="text" id="set-wave"></label>
+          <label class="field"><span class="lbl">WhatsApp</span><input type="text" id="set-wa"></label>
+          <button class="btn primary" type="submit">Enregistrer les réglages</button>
+        </form>
+      </div>
+
+      <div class="stack" style="gap:18px">
+        <div class="panel">
+          <div class="ph"><h2>Clients</h2>
+            <form id="search-form" class="row" style="gap:6px"><label class="vh" for="search">Rechercher un e-mail</label><input type="text" id="search" placeholder="Rechercher un e-mail" style="width:220px"><button class="btn small" type="submit">OK</button></form></div>
+          <div class="tw"><table><thead><tr><th>E-mail</th><th style="text-align:right">Crédits</th><th style="text-align:right">Projets</th><th>Inscrit le</th><th></th></tr></thead><tbody id="users"></tbody></table></div>
+        </div>
+        <div class="panel">
+          <h2>Derniers mouvements</h2>
+          <div class="tw"><table><thead><tr><th>Date</th><th>Client</th><th>Motif</th><th style="text-align:right">Crédits</th></tr></thead><tbody id="events"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/config.js"></script>
+<script src="assets/mock.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<script src="assets/core.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>

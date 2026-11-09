@@ -1,0 +1,9 @@
+# Facultatif : seulement si tu déploies avec l'outil en ligne de commande "wrangler".
+# Depuis un téléphone, colle plutôt worker.js dans l'éditeur du tableau de bord Cloudflare (voir README).
+name = "clipmoment-api"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://clipmoment.pages.dev"
+# Les clés secrètes se définissent avec : wrangler secret put SUPABASE_SERVICE_KEY  (idem pour GROQ_API_KEY)
